@@ -25,7 +25,7 @@ import torch.nn.functional as F
 import warnings
 warnings.filterwarnings('ignore')
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 #label_colours = [(0,0,0)
 #                , (128,0,0), (255,0,0), (0,85,0), (170,0,51), (255,85,0), (0,0,85), (0,119,221), (85,85,0), (0,85,85), (85,51,0), (52,86,128), (0,128,0)
 #                , (0,0,255), (51,170,221), (0,255,255), (85,255,170), (170,255,85), (255,255,0), (255,170,0)]
@@ -243,8 +243,8 @@ if __name__ == '__main__':
                     BASE_DIR, 'processed_train', i, code,
                     mp4.split('.')[0])
 
-                if not os.path.exists(MASK_DIR):
-                    os.makedirs(MASK_DIR)
+                if not os.path.exists(SAVE_DIR):
+                    os.makedirs(SAVE_DIR)
 
                 # read frames using cv2
                 cap = cv2.VideoCapture(mp4_path)
