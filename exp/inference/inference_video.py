@@ -224,7 +224,7 @@ if __name__ == '__main__':
     TRAIN_DIR = os.path.join(BASE_DIR, 'train')
     ids = sorted(os.listdir(TRAIN_DIR))
 
-    for i in ids[-20:]:
+    for i in ids[:20]:
         id_path = os.path.join(TRAIN_DIR, i)
 
         codes = os.listdir(id_path)
@@ -238,9 +238,9 @@ if __name__ == '__main__':
             for mp4 in mp4s:
                 mp4_path = os.path.join(code_path, mp4)
 
-                # mask directory path
-                MASK_DIR = os.path.join(
-                    BASE_DIR, 'mask', i, code,
+                # processed image and mask directory path
+                SAVE_DIR = os.path.join(
+                    BASE_DIR, 'processed_train', i, code,
                     mp4.split('.')[0])
 
                 if not os.path.exists(MASK_DIR):
@@ -266,8 +266,9 @@ if __name__ == '__main__':
                                 img=frame,
                                 use_gpu=use_gpu)
     
-                            mask_filename = '{}.png'.format(str(img_ctr))
-
+                            mask_filename = '{}_mask.png'.format(str(img_ctr))
+                            frame_filename = '{}_frame.png'.format(str(img_ctr))
+                            '''
                             if img_ctr == 1:
                                 # cv2 video writer init
                                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -281,9 +282,12 @@ if __name__ == '__main__':
                             overlaid_image = Image.blend(frame, mask, 0.5)
 
                             video_writer.write(np.array(overlaid_image))
+                            '''
 
+                            frame.save(
+                                os.path.join(SAVE_DIR, frame_filename))
                             mask.save(
-                                os.path.join(MASK_DIR, mask_filename))
+                                os.path.join(SAVE_DIR, mask_filename))
 
                             img_ctr += 1
 
@@ -291,4 +295,4 @@ if __name__ == '__main__':
                             break
                             
                     cap.release()
-                    video_writer.release()
+                    # video_writer.release()
