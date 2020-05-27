@@ -25,7 +25,7 @@ import torch.nn.functional as F
 import warnings
 warnings.filterwarnings('ignore')
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 #label_colours = [(0,0,0)
 #                , (128,0,0), (255,0,0), (0,85,0), (170,0,51), (255,85,0), (0,0,85), (0,119,221), (85,85,0), (0,85,85), (85,51,0), (52,86,128), (0,128,0)
 #                , (0,0,255), (51,170,221), (0,255,255), (85,255,170), (170,255,85), (255,255,0), (255,170,0)]
@@ -198,6 +198,10 @@ if __name__ == '__main__':
     # parser.add_argument('--loadmodel',default=None,type=str)
     parser.add_argument('--loadmodel', default='', type=str)
     parser.add_argument('--use_gpu', default=1, type=int)
+    parser.add_argument(
+        '--BASE_DIR',
+        default='/mnt/Data/Data/modidatasets/VoxCeleb2/',
+        type=str)
     opts = parser.parse_args()
 
     net = deeplab_xception_transfer.deeplab_xception_transfer_projection_savemem(n_classes=20,
@@ -220,11 +224,11 @@ if __name__ == '__main__':
 
 
     # reading frames from videos
-    BASE_DIR = '/mnt/Data/Data/voxceleb2/'
+    BASE_DIR = opts.BASE_DIR 
     TRAIN_DIR = os.path.join(BASE_DIR, 'train')
     ids = sorted(os.listdir(TRAIN_DIR))
 
-    for i in ids[:20]:
+    for i in ids[8:20]:
         id_path = os.path.join(TRAIN_DIR, i)
 
         codes = os.listdir(id_path)
