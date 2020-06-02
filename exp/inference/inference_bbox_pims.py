@@ -58,7 +58,10 @@ def process_and_save_frame(frame, fa, index, mode=''):
     np_mask = np_mask[x1 : x2, y1 : y2]
     np_frame = frame[x1 : x2, y1 : y2]
     # Get the bounding box first
-    preds, boxes = fa.get_landmarks(np_frame)
+    try:
+        preds, boxes = fa.get_landmarks(np_frame)
+    except:
+        return
 
     np_mask_filename = '{}_{}_mask.png'.format(str(index + 1), mode)
     np_frame_filename = '{}_{}_frame.png'.format(str(index + 1), mode)
