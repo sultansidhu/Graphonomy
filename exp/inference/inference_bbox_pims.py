@@ -414,16 +414,22 @@ if __name__ == '__main__':
     TRAIN_DIR = os.path.join(BASE_DIR, 'train')
     ids = sorted(os.listdir(TRAIN_DIR))
 
-    for i in ids[2:5]:
+    for i in ids[4:5]:
         id_path = os.path.join(TRAIN_DIR, i)
 
         codes = os.listdir(id_path)
+
+        if len(codes) > 5:
+            codes = sorted(random.sample(codes, 5))
 
         for code in codes:
             code_path = os.path.join(id_path, code)
 
             mp4s = os.listdir(code_path)
             print('Processing:{}, {}'.format(i, code))
+
+            if len(mp4s) > 5:
+                mp4s = sorted(random.sample(mp4s, 5))
 
             for mp4 in mp4s:
                 mp4_path = os.path.join(code_path, mp4)
