@@ -416,7 +416,7 @@ if __name__ == '__main__':
     TRAIN_DIR = os.path.join(BASE_DIR, 'train')
     ids = sorted(os.listdir(TRAIN_DIR))
 
-    for i in ids[11:20]:
+    for i in ids[11:25]:
         id_path = os.path.join(TRAIN_DIR, i)
 
         codes = os.listdir(id_path)
