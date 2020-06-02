@@ -411,7 +411,7 @@ if __name__ == '__main__':
     TRAIN_DIR = os.path.join(BASE_DIR, 'train')
     ids = sorted(os.listdir(TRAIN_DIR))
 
-    for i in ids[:20]:
+    for i in ids[2:5]:
         id_path = os.path.join(TRAIN_DIR, i)
 
         codes = os.listdir(id_path)
@@ -452,7 +452,12 @@ if __name__ == '__main__':
                     random_index = random.randint(
                         k * 25, (k + 1) * 25)
 
-                    frame = v.get_frame(random_index)
+                    try:
+                        frame = v.get_frame(random_index)
+                    except:
+                        print('{} Frame error.'.format(mp4_path))
+                        break
+
                     process_and_save_frame(frame, fa, random_index, 'random')
 
                 # sample contiguous block of 1 second
@@ -460,7 +465,12 @@ if __name__ == '__main__':
                 end_frame = start_frame + int(fps)
 
                 for idx in range(start_frame, end_frame, 1):
-                    frame = v.get_frame(idx)
+                    try:
+                        frame = v.get_frame(idx)
+                    except:
+                        print('{} Frame error.'.format(mp4_path))
+                        break
+
                     process_and_save_frame(frame, fa, idx, 'continuous')
 
                 v.close()
