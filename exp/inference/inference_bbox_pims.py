@@ -180,7 +180,7 @@ def get_extremes_outside_in(np_mask):
         if found_topmost and found_leftmost:
             break
 
-    hb, wb, hr, wr = 0, 0, 0, 0
+    hb, wb, hr, wr = height, width, height, width
     for h in range(height - 1, -1, -1):
         for w in range(width - 1, -1, -1):
             if np_mask[h, w] != 0. and (not found_bottommost):
@@ -416,7 +416,7 @@ if __name__ == '__main__':
     TRAIN_DIR = os.path.join(BASE_DIR, 'train')
     ids = sorted(os.listdir(TRAIN_DIR))
 
-    for i in ids[11:25]:
+    for i in ids[200:300]:
         id_path = os.path.join(TRAIN_DIR, i)
 
         codes = os.listdir(id_path)
