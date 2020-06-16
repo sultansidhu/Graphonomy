@@ -437,7 +437,7 @@ if __name__ == "__main__":
 
     random.seed(0)
 
-    fi = open('~/modidatasets/VoxCeleb2/processing_text_files/video_0_10000.txt', 'r')
+    fi = open('~/modidatasets/VoxCeleb2/train/processing_text_files/video_0_10000.txt', 'r')
     for sample in fi:
         sample = sample.replace('\n', '')
         sample = os.path.join(
