@@ -437,17 +437,17 @@ if __name__ == "__main__":
 
     random.seed(0)
 
-    fi = open('~/modidatasets/VoxCeleb2/train/processing_text_files/videos_0_10000.txt', 'r')
+    fi = open('/home/ubuntu/modidatasets/VoxCeleb2/train/processing_text_files/videos_0_10000.txt', 'r')
     for sample in fi:
         sample = sample.replace('\n', '')
-        sample = os.path.join(
-            '~/modidatasets/VoxCeleb2/train', sample)
-
         idx, code, mp4 = sample.split('/')
+
+        sample = os.path.join(
+            '/home/ubuntu/modidatasets/VoxCeleb2/train', sample)
 
         # processed image and mask directory path
         SAVE_DIR = os.path.join(
-            BASE_DIR, "videos_0_10000", i, code, mp4.split(".")[0]
+            opts.BASE_DIR, "videos_0_10000", idx, code, mp4.split(".")[0]
         )
 
         if not os.path.exists(SAVE_DIR):
@@ -483,15 +483,15 @@ if __name__ == "__main__":
         start_frame = random.randint(0, frames - int(fps) - 5)
         end_frame = start_frame + int(fps)
 
-        for idx in range(start_frame, end_frame, 1):
+        for idx_frame in range(start_frame, end_frame, 1):
             try:
-                frame = v.get_frame(idx)
+                frame = v.get_frame(idx_frame)
             except:
                 print("{} Frame error.".format(mp4_path))
                 break
 
-            process_and_save_frame(frame, fa, idx, "continuous")
+            process_and_save_frame(frame, fa, idx_frame, "continuous")
 
         v.close()
-        print(time.time() - start)
+        print(sample + ' : ' + str(time.time() - start))
     fi.close()
