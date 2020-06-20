@@ -404,7 +404,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--BASE_DIR", default="/mnt/Data/Data/modidatasets/VoxCeleb2/", type=str
     )
-    parser.add_argument("--video_list", default="videos_0_10000.txt", type=str)
+    parser.add_argument("--video_list", default="videos_0_10000", type=str)
     opts = parser.parse_args()
 
     net = deeplab_xception_transfer.deeplab_xception_transfer_projection_savemem(
@@ -439,7 +439,7 @@ if __name__ == "__main__":
     video_list = opts.video_list
 
     fi = open(
-        "/home/ubuntu/modidatasets/VoxCeleb2/preprocessed_data/train/processing_text_files/{}".format(
+        "/home/ubuntu/modidatasets/VoxCeleb2/preprocessed_data/train/processing_text_files/{}.txt".format(
             video_list
         ),
         "r",
@@ -451,7 +451,7 @@ if __name__ == "__main__":
         sample = os.path.join("/home/ubuntu/modidatasets/VoxCeleb2/train", sample)
 
         # processed image and mask directory path
-        SAVE_DIR = os.path.join(home, video_list.split('.')[0], idx, code, mp4.split(".")[0])
+        SAVE_DIR = os.path.join(home, video_list, idx, code, mp4.split(".")[0])
 
         if not os.path.exists(SAVE_DIR):
             os.makedirs(SAVE_DIR)
