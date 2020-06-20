@@ -404,8 +404,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--BASE_DIR", default="/mnt/Data/Data/modidatasets/VoxCeleb2/", type=str
     )
-    parser.add_argument("--START", default=100, type=int)
-    parser.add_argument("--END", default=150, type=int)
+    parser.add_argument("--video_list", default="videos_0_10000.txt", type=str)
     opts = parser.parse_args()
 
     net = deeplab_xception_transfer.deeplab_xception_transfer_projection_savemem(
@@ -436,19 +435,23 @@ if __name__ == "__main__":
     no_bbox = np.zeros((1, 5))
 
     random.seed(0)
+    home = os.getenv("HOME")
+    video_list = opts.video_list
 
-    fi = open('/home/ubuntu/modidatasets/VoxCeleb2/train/processing_text_files/videos_0_10000.txt', 'r')
+    fi = open(
+        "/home/ubuntu/modidatasets/VoxCeleb2/preprocessed_data/train/processing_text_files/{}".format(
+            video_list
+        ),
+        "r",
+    )
     for sample in fi:
-        sample = sample.replace('\n', '')
-        idx, code, mp4 = sample.split('/')
+        sample = sample.replace("\n", "")
+        idx, code, mp4 = sample.split("/")
 
-        sample = os.path.join(
-            '/home/ubuntu/modidatasets/VoxCeleb2/train', sample)
+        sample = os.path.join("/home/ubuntu/modidatasets/VoxCeleb2/train", sample)
 
         # processed image and mask directory path
-        SAVE_DIR = os.path.join(
-            opts.BASE_DIR, "videos_0_10000", idx, code, mp4.split(".")[0]
-        )
+        SAVE_DIR = os.path.join(home, video_list.split('.')[0], idx, code, mp4.split(".")[0])
 
         if not os.path.exists(SAVE_DIR):
             os.makedirs(SAVE_DIR)
@@ -493,5 +496,5 @@ if __name__ == "__main__":
             process_and_save_frame(frame, fa, idx_frame, "continuous")
 
         v.close()
-        print(sample + ' : ' + str(time.time() - start))
+        print(sample + " : " + str(time.time() - start))
     fi.close()
