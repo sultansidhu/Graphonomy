@@ -444,6 +444,7 @@ if __name__ == "__main__":
         ),
         "r",
     )
+    ctr = 0
     for sample in fi:
         sample = sample.replace("\n", "")
         idx, code, mp4 = sample.split("/")
@@ -451,7 +452,7 @@ if __name__ == "__main__":
         sample = os.path.join("/home/ubuntu/modidatasets/VoxCeleb2/train", sample)
 
         # processed image and mask directory path
-        SAVE_DIR = os.path.join(home, video_list, idx, code, mp4.split(".")[0])
+        SAVE_DIR = os.path.join(home, 'VoxCeleb2', video_list, idx, code, mp4.split(".")[0])
 
         if not os.path.exists(SAVE_DIR):
             os.makedirs(SAVE_DIR)
@@ -497,4 +498,10 @@ if __name__ == "__main__":
 
         v.close()
         print(sample + " : " + str(time.time() - start))
+        ctr += 1
+
+        if (ctr + 1) % 1000 == 0:
+            # sync files with s3
+            os.system('aws s3 cp --recursive ./VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
+        
     fi.close()
