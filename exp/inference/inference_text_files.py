@@ -500,7 +500,7 @@ if __name__ == "__main__":
         print(sample + " : " + str(time.time() - start))
         ctr += 1
 
-        if (ctr + 1) % 1000 == 0:
+        if ctr % 500 == 0:
             # sync files with s3
             os.system('aws s3 cp --recursive ./VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
         
