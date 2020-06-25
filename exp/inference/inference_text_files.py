@@ -502,6 +502,6 @@ if __name__ == "__main__":
 
         if ctr % 500 == 0:
             # sync files with s3
-            os.system('aws s3 cp --recursive ./VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
+            os.system('aws s3 cp --recursive $HOME/VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
         
     fi.close()
