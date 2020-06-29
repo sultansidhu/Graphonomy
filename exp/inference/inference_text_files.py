@@ -505,8 +505,9 @@ if __name__ == "__main__":
         print(sample + " : " + str(time.time() - start))
         ctr += 1
 
-        if ctr % 500 == 0:
+        if ctr % 2000 == 0:
             # sync files with s3
-            os.system('aws s3 cp --recursive $HOME/VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
+            os.system('aws s3 cp --quiet --recursive $HOME/VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
         
-    fi.close()
+    fi.close() 
+    print('ALL FILES HAVE BEEN PROCESSED..... TERMINATING INSTANCE')
