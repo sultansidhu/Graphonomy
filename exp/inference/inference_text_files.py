@@ -457,6 +457,7 @@ if __name__ == "__main__":
         if os.path.exists(SAVE_DIR):
             saved_files = os.listdir(SAVE_DIR)
             if len(saved_files) > 30:
+                ctr += 1
                 continue
 
         if not os.path.exists(SAVE_DIR):
