@@ -454,6 +454,11 @@ if __name__ == "__main__":
         # processed image and mask directory path
         SAVE_DIR = os.path.join(home, 'VoxCeleb2', video_list, idx, code, mp4.split(".")[0])
 
+        if os.path.exists(SAVE_DIR):
+            saved_files = os.listdir(SAVE_DIR)
+            if len(saved_files) > 30:
+                continue
+
         if not os.path.exists(SAVE_DIR):
             os.makedirs(SAVE_DIR)
 
