@@ -449,7 +449,7 @@ if __name__ == "__main__":
         sample = sample.replace("\n", "")
         idx, code, mp4 = sample.split("/")
 
-        sample = os.path.join("/home/ubuntu/modidatasets/VoxCeleb2/train", sample)
+        sample = os.path.join("/home/ubuntu/{}".format(video_list), sample)
 
         # processed image and mask directory path
         SAVE_DIR = os.path.join(home, 'VoxCeleb2', video_list, idx, code, mp4.split(".")[0])
@@ -505,6 +505,9 @@ if __name__ == "__main__":
         v.close()
         print(sample + " : " + str(time.time() - start))
         ctr += 1
+
+        if ctr % 1000 == 0:
+            print('{} files processed'.format(str(ctr)))
 
         if ctr % 2000 == 0:
             # sync files with s3
