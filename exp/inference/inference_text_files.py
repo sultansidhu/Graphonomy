@@ -512,6 +512,8 @@ if __name__ == "__main__":
         if ctr % 2000 == 0:
             # sync files with s3
             os.system('aws s3 cp --quiet --recursive $HOME/VoxCeleb2 s3://modiface-rnd/VoxCeleb2')
+            # remove processed files to save time in redundant copies
+            os.system('rm -rf $HOME/VoxCeleb2/{}/*'.format(video_list))
         
     fi.close() 
     print('ALL FILES HAVE BEEN PROCESSED..... TERMINATING INSTANCE')
