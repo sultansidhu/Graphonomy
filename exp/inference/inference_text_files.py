@@ -490,7 +490,12 @@ if __name__ == "__main__":
             process_and_save_frame(frame, fa, random_index, "random")
 
         # sample contiguous block of 1 second
-        start_frame = random.randint(0, frames - int(fps) - 5)
+        try:
+            start_frame = random.randint(0, frames - int(fps) - 5)
+        except:
+            print("{} Frame sampling did not work".format(mp4_path))
+            break
+
         end_frame = start_frame + int(fps)
 
         for idx_frame in range(start_frame, end_frame, 1):
