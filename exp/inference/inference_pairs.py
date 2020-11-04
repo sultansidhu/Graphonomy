@@ -1,4 +1,5 @@
 import socket
+import pickle
 import timeit
 import numpy as np
 from PIL import Image
@@ -231,7 +232,7 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
     
     guide = GuidedFilter(
         #guidance_map.shape[-2:],
-        r=16,
+        r=4,
         eps=1e-3,
         downsample_stride=4,
     ).cuda()
@@ -266,6 +267,8 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
         axis=-1
     )
     foreground_soft_mask = foreground_soft_mask.cpu().numpy()
+    with open(os.path.join(output_path, 'FG_softmask_' + output_name + '.pkl'), 'wb') as handle:
+        pickle.dump(foreground_soft_mask, handle)
     foreground_soft_mask = (foreground_soft_mask * 255).astype(np.uint8)
     cv2.imwrite(os.path.join(output_path, 'guided_FG_' + output_name + '.png'), foreground_soft_mask)
 
