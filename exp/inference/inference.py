@@ -123,6 +123,7 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
     :param output_path:
     :return:
     """
+
     # adj
     adj2_ = torch.from_numpy(graph.cihp2pascal_nlp_adj).float()
     adj2_test = (
@@ -200,13 +201,12 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
             else:
                 outputs_final = outputs.clone()
 
-    import ipdb; ipdb.set_trace()
     foreground = outputs_final[0, 1:, :, :] # [19 feature maps]
     foreground = torch.sum(foreground, axis=0) # [256, 256]
     H, W = foreground.shape
     foreground_unroll = torch.flatten(foreground)
     foreground_unroll = nn.Softmax(dim=0)(foreground_unroll)
-    foreground_unroll = torch.resize(foreground_unroll, (H, W))
+    #foreground_unroll = torch.resize(foreground_unroll, (H, W))
     
     ################ plot pic
     predictions = torch.max(outputs_final, 1)[1]
@@ -214,8 +214,8 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
     vis_res = decode_labels(results)
 
     parsing_im = Image.fromarray(vis_res[0])
-    parsing_im.save("outputs/{}.png".format(output_name))
-    cv2.imwrite("outputs/{}_gray.png".format(output_name), results[0, :, :])
+    parsing_im.save(os.path.join(output_path, output_name))
+    #cv2.imwrite("outputs/{}_gray.png".format(output_name), results[0, :, :])
 
     end_time = timeit.default_timer()
     print(
@@ -254,10 +254,22 @@ if __name__ == "__main__":
         use_gpu = False
         raise RuntimeError("must use the gpu!!!!")
 
+    path = opts.img_path
+    I_1_path = os.path.join(path, 'I_1.png')
+    synth_path = os.path.join(path, 'project.png')
+
     inference(
         net=net,
-        img_path=opts.img_path,
-        output_path=opts.output_path,
-        output_name=opts.output_name,
+        img_path=I_1_path,
+        output_path=path,
+        output_name='I_1_M.png',
+        use_gpu=use_gpu,
+    )
+
+    inference(
+        net=net,
+        img_path=synth_path,
+        output_path=path,
+        output_name='project_M.png',
         use_gpu=use_gpu,
     )
