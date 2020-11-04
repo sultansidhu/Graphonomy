@@ -1,4 +1,5 @@
 import socket
+import pickle
 import timeit
 import numpy as np
 from PIL import Image
@@ -268,6 +269,21 @@ def inference(net, img_path="", output_path="./", use_gpu=True):
     foreground_soft_mask = foreground_soft_mask.cpu().numpy()
     foreground_soft_mask = (foreground_soft_mask * 255).astype(np.uint8)
     cv2.imwrite(os.path.join(output_path, 'guided_mask.png'), foreground_soft_mask)
+
+    hair_predictions = guided_predictions[0, 2, :, :]
+    face_predictions = guided_predictions[0, 13, :, :]
+    foreground_softmask = hair_predictions + face_predictions # [512, 512]
+    foreground_softmask = torch.unsqueeze(foreground_softmask, axis=-1)
+    foreground_softmask = torch.cat(
+        (foreground_softmask, foreground_softmask, foreground_softmask),
+        axis=-1
+    )
+    foreground_softmask = foreground_softmask.cpu().numpy()
+    with open(os.path.join(output_path, 'hair_face_softmask.pkl'), 'wb') as handle:
+        pickle.dump(foreground_softmask, handle)
+    foreground_softmask = (foreground_softmask * 255).astype(np.uint8)
+    cv2.imwrite(os.path.join(output_path, 'guided_hair_face_mask.png'), foreground_softmask)
+
 
 
 if __name__ == "__main__":

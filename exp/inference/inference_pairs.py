@@ -213,7 +213,7 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
     vis_res = decode_labels(results)
 
     parsing_im = Image.fromarray(vis_res[0])
-    parsing_im.save(os.path.join(output_path, output_name))
+    parsing_im.save(os.path.join(output_path, output_name + '.png'))
     #cv2.imwrite("outputs/{}_gray.png".format(output_name), results[0, :, :])
 
     end_time = timeit.default_timer()
@@ -224,19 +224,14 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
     )
 
 
-    import ipdb; ipdb.set_trace()
     # guided filter code goes here
-    guidance_transform = transforms.Compose(
-        [
-            tr.Normalize_xception_tf_only_img(),
-            transforms.ToTensor()
-        ]
-    )
-    guidance_map = guidance_transform(real_img) # [512, 512]
+    guidance_map = real_img.resize((512, 512))
+    guidance_map = transforms.ToTensor()(guidance_map)
     guidance_map = guidance_map.unsqueeze(0).cuda()
+    
     guide = GuidedFilter(
-        guidance_map.shape[-2:],
-        r=16, # model.guidance.radius
+        #guidance_map.shape[-2:],
+        r=16,
         eps=1e-3,
         downsample_stride=4,
     ).cuda()
@@ -249,25 +244,44 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
         align_corners=False
     )
 
-    # get guided predictions; predictions: [1, 20, 512, 512]
-    for idx, channel in predictions[0, ...]:
+    # get guided predictions; 
+    # guidance_map: [1, 3, 512, 512], predictions: [1, 20, 512, 512]
+    for idx, channel in enumerate(predictions[0, ...]):
+        current_channel = predictions[:, idx, :, :]
+        current_channel = torch.unsqueeze(current_channel, axis=0) # [1, 1, 512, 512]
         if idx == 0:
-            guided_predictions = guide(guidance_map, predictions[idx, ...])
+            guided_predictions = guide(guidance_map, current_channel) # [1, 1, 512, 512]
         else:
             guided_predictions = torch.cat(
-                (guided_predictions, guide(guidance_map, predictions[idx, ...]))
+                (guided_predictions, guide(guidance_map, current_channel)),
+                axis=1
             )
-    guided_predictions = F.softmax(guided_predictions, dim=0)
-    foreground_predictions = guided_predictions[1:, ...] # 0 is background
+    # guided_predictions: [1, 20, 512, 512]
+    guided_predictions = F.softmax(guided_predictions, dim=1)
+    foreground_predictions = guided_predictions[0, 1:, ...] # [19, 512, 512], 0 is background
     foreground_soft_mask = torch.sum(foreground_predictions, axis=0) # [H, W]
-    foreground_soft_mask = torch.unsqueeze(foreground_soft_mask, axis=-1)
+    foreground_soft_mask = torch.unsqueeze(foreground_soft_mask, axis=-1) # [H, W, 1]
     foreground_soft_mask = torch.cat(
         (foreground_soft_mask, foreground_soft_mask, foreground_soft_mask),
         axis=-1
     )
     foreground_soft_mask = foreground_soft_mask.cpu().numpy()
     foreground_soft_mask = (foreground_soft_mask * 255).astype(np.uint8)
-    cv2.imwrite(os.path.join(output_path, foreground_soft_mask))
+    cv2.imwrite(os.path.join(output_path, 'guided_FG_' + output_name + '.png'), foreground_soft_mask)
+
+    hair_predictions = guided_predictions[0, 2, :, :]
+    face_predictions = guided_predictions[0, 13, :, :]
+    foreground_softmask = hair_predictions + face_predictions # [512, 512]
+    foreground_softmask = torch.unsqueeze(foreground_softmask, axis=-1)
+    foreground_softmask = torch.cat(
+        (foreground_softmask, foreground_softmask, foreground_softmask),
+        axis=-1
+    )
+    foreground_softmask = foreground_softmask.cpu().numpy()
+    with open(os.path.join(output_path, 'HF_softmask_' + output_name + '.pkl'), 'wb') as handle:
+        pickle.dump(foreground_softmask, handle)
+    foreground_softmask = (foreground_softmask * 255).astype(np.uint8)
+    cv2.imwrite(os.path.join(output_path, 'guided_HF_' + output_name + '.png'), foreground_softmask)
 
 
 if __name__ == "__main__":
@@ -307,7 +321,7 @@ if __name__ == "__main__":
         net=net,
         img_path=I_1_path,
         output_path=path,
-        output_name='I_1_M.png',
+        output_name='I_1_M',
         use_gpu=use_gpu,
     )
 
@@ -315,6 +329,6 @@ if __name__ == "__main__":
         net=net,
         img_path=synth_path,
         output_path=path,
-        output_name='project_M.png',
+        output_name='project_M',
         use_gpu=use_gpu,
     )

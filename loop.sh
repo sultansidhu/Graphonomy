@@ -10,5 +10,5 @@ images2=('67172_00018_67172' '67172_00421_67172' '67172_01037_67172' '67172_6717
 
 len=${#images[@]}
 for (( i=0; i<len; i++ )) do
-	python exp/inference/inference.py --loadmodel data/pretrained_model/inference.pth --img_path results/face-1.0_bkgd-0.0_hair-1.0_hairBlocks-4,5_style-15000.0_styleLayers-3,8,15,22_appearance-40.0_appearanceLayers-1_mask-0.0_useGP-1_styleMaskType-1/${images[$i]}
+	python exp/inference/inference_pairs.py --loadmodel data/pretrained_model/inference.pth --img_path results/face-1.0_bkgd-0.0_hair-1.0_hairBlocks-4,5_style-15000.0_styleLayers-3,8,15,22_appearance-40.0_appearanceLayers-1_mask-0.0_useGP-1_styleMaskType-1/${images[$i]}
 done
