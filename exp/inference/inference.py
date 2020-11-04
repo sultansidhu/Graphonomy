@@ -10,6 +10,7 @@ from collections import OrderedDict
 sys.path.append("./")
 # PyTorch includes
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
 from torchvision import transforms
 import cv2
@@ -138,6 +139,7 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
     # multi-scale
     scale_list = [1, 0.5, 0.75, 1.25, 1.5, 1.75]
     img = read_img(img_path)
+    img = img.resize((256, 256))
     testloader_list = []
     testloader_flip_list = []
     for pv in scale_list:
@@ -197,14 +199,23 @@ def inference(net, img_path="", output_path="./", output_name="f", use_gpu=True)
                 outputs_final = outputs_final + outputs
             else:
                 outputs_final = outputs.clone()
+
+    import ipdb; ipdb.set_trace()
+    foreground = outputs_final[0, 1:, :, :] # [19 feature maps]
+    foreground = torch.sum(foreground, axis=0) # [256, 256]
+    H, W = foreground.shape
+    foreground_unroll = torch.flatten(foreground)
+    foreground_unroll = nn.Softmax(dim=0)(foreground_unroll)
+    foreground_unroll = torch.resize(foreground_unroll, (H, W))
+    
     ################ plot pic
     predictions = torch.max(outputs_final, 1)[1]
     results = predictions.cpu().numpy()
     vis_res = decode_labels(results)
 
     parsing_im = Image.fromarray(vis_res[0])
-    parsing_im.save(output_path + "/{}.png".format(output_name))
-    cv2.imwrite(output_path + "/{}_gray.png".format(output_name), results[0, :, :])
+    parsing_im.save("outputs/{}.png".format(output_name))
+    cv2.imwrite("outputs/{}_gray.png".format(output_name), results[0, :, :])
 
     end_time = timeit.default_timer()
     print(
