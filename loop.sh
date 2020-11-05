@@ -7,7 +7,33 @@ images=('00761_00761_00018' '00761_00761_00289' '01012_00018_01012' '01012_00841
 	'67172_67172_00171' '67172_67172_00427' '67172_00380_67172' '67172_00841_67172'
 	'67172_67172_00059' '67172_67172_00289' '67172_67172_00736')
 
+images2=('00018_00059_00079' '00059_00079_00131' '00079_00059_00018' '00131_00066_00001'
+	'00037_00079_00001' '00059_00275_00171' '00081_00079_00131' '01012_01037_00436'
+	'00037_00171_00289' '00066_00200_00018' '00110_00059_00171' '56006_67172_00722') 
+
+
+filename="ids.txt"
+images=()
+while read -r line; do
+	name="$line"
+	images+=($name)
+done < "$filename"
+
 len=${#images[@]}
-for (( i=0; i<len; i++ )) do
-	python exp/inference/inference_pairs.py --loadmodel data/pretrained_model/inference.pth --img_path results/face-1.0_bkgd-0.0_hair-1.0_hairBlocks-4,5_style-15000.0_styleLayers-3,8,15,22_appearance-40.0_appearanceLayers-1_mask-0.0_useGP-1_styleMaskType-1/${images[$i]}
+
+echo $len
+
+train () {
+	export CUDA_VISIBLE_DEVICES=$1
+	python exp/inference/inference_pairs.py --loadmodel data/pretrained_model/inference.pth\
+		--img_path synth/$2
+}
+
+for (( i=0; i<len; i=i+4 )) do
+	
+	train 0 ${images[$i]} &
+	train 1 ${images[$((i+1))]} &
+	train 2 ${images[$((i+2))]} &
+	train 3 ${images[$((i+3))]} &
+	wait
 done

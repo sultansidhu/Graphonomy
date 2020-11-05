@@ -15,7 +15,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torchvision import transforms
 import cv2
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 # Custom includes
 from networks import deeplab_xception_transfer, graph
