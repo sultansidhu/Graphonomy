@@ -20,7 +20,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 # Custom includes
 from networks import deeplab_xception_transfer, graph
 from dataloaders import custom_transforms as tr
-from guided_filter import GuidedFilter
+from hair_style_transfer.src.networks.guided_filter import GuidedFilter
 #
 import argparse
 import torch.nn.functional as F
